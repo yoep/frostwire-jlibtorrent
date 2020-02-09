@@ -120,6 +120,12 @@ prepare_linux_toolchain() {
   sudo apt-get install -qq g++-5
 }
 
+prepare_linux_arm_toolchain {
+  echo "Installing g++-5"
+  sudo apt-get update -qq
+  sudo apt-get install -qq g++-5
+}
+
 prepare_openssl() {
   abort_if_var_unset "SRC" ${SRC}
   abort_if_var_unset "OPENSSL_VERSION" ${OPENSSL_VERSION}

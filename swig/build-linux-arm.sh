@@ -15,7 +15,7 @@ export os_build=linux
 export SHARED_LIB=lib${LIBRARY_NAME}.so
 export SHARED_LIB_FINAL=${SHARED_LIB} # dummy for macosx
 export CXX=g++
-prepare_linux_toolchain
+prepare_linux_arm_toolchain
 export CC=gcc-5
 export run_openssl_configure="./Configure linux-${os_arch}v4 ${OPENSSL_NO_OPTS} -march=armv7-a -mfpu=neon -fPIC --prefix=${OPENSSL_ROOT}";
 export run_readelf="readelf -d bin/release/${os_build}/${os_arch}/${SHARED_LIB}"
