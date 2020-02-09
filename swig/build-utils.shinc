@@ -201,6 +201,7 @@ build_libraries() {
   export PATH=${PATH}:${BOOST_ROOT}/tools/build/src/engine
   echo "Added boost tools to PATH:"
   echo ${PATH}
+  export LIBTORRENT_ROOT=${LIBTORRENT_ROOT}
   $run_bjam
   if [[ $? -ne 0 ]]; then
     echo "Run BJAM failed with exit code ${$?}"
