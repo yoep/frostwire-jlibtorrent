@@ -80,7 +80,13 @@ prepare_boost() {
   fi
   pushd ${BOOST_ROOT}
   pwd
-  ./bootstrap.sh --with-bjam=BJAM
+  if [[ "${os_build}-${os_arch}" -eq "linux-arm" ]]; then
+    echo "Using boost's default bootstrap build"
+    ./bootstrap.sh
+  else
+    echo "Using boost's bjam bootstrap build"
+    ./bootstrap.sh --with-bjam=BJAM
+  fi
   popd
   popd
 }
