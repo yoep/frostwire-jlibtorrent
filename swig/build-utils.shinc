@@ -202,6 +202,10 @@ build_libraries() {
   echo "Added boost tools to PATH:"
   echo ${PATH}
   $run_bjam
+  if [[ $? -ne 0 ]]; then
+    echo "Run BJAM failed with exit code ${$?}"
+    exit 1
+  fi
   $run_objcopy
   $run_strip
   if [[ $os_build == "windows" ]]; then
