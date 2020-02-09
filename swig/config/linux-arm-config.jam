@@ -1,0 +1,17 @@
+import os ;
+
+using gcc : arm : g++-5 :
+    <cxxflags>-fPIC
+    <cxxflags>-march=armv7-a
+    <cxxflags>-mfpu=neon
+    <cxxflags>-std=c++14
+    <cxxflags>-fno-strict-aliasing
+    <cxxflags>-fvisibility=hidden
+    <linkflags>-static-libstdc++
+    <linkflags>-static-libgcc
+    <linkflags>"-z noexecstack"
+    # debug information
+    <cxxflags>-g
+    <cxxflags>-gdwarf-4
+    <cxxflags>-ggdb
+    ;
