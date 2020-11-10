@@ -136,9 +136,10 @@ prepare_linux_toolchain() {
 }
 
 prepare_linux_arm_toolchain() {
-  echo "Installing g++-5"
+  echo "preparing linux ARM toolchain..."
+  echo "Installing g++-7"
   sudo apt-get update -qq
-  sudo apt-get install -qq g++-5
+  sudo apt-get install -qq g++-7
 }
 
 prepare_openssl() {
