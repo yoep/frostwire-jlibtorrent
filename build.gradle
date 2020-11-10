@@ -4,10 +4,10 @@ apply plugin: 'maven'
 
 group 'com.frostwire'
 archivesBaseName = 'jlibtorrent'
-version '1.2.3.0'
+version '1.2.10.0'
 
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 if (!hasProperty('ossrhUsername')) {
     ext.ossrhUsername = ''
@@ -25,12 +25,14 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+tasks.withType(Test) {
+    systemProperty "java.library.path", "."
+}
+
 test {
     testLogging {
-        events "passed", "skipped", "failed"
+        events "passed", "skipped", "failed", "standard_out"
     }
-
-    environment "LD_LIBRARY_PATH": new File('.').absolutePath
 }
 
 task sourcesJar(type: Jar) {

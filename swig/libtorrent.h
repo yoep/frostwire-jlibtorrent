@@ -231,6 +231,7 @@ struct ip_route
     libtorrent::address destination;
     libtorrent::address netmask;
     libtorrent::address gateway;
+    libtorrent::address source_hint;
     std::vector<std::int8_t> name;
     int mtu;
 };
@@ -272,13 +273,43 @@ std::vector<ip_route> enum_routes(libtorrent::session* s)
     return ret;
 }
 
-libtorrent::address get_default_gateway(libtorrent::session* s
-    , std::vector<std::int8_t> device, bool v6)
+void copy_byte_vector_to_char_array(std::vector<std::int8_t> source, char* target, const unsigned int target_size)
 {
-    boost::system::error_code ec;
-    return libtorrent::get_default_gateway(s->get_io_service()
-        , {reinterpret_cast<char const*>(device.data()), device.size()}
-        , v6, ec);
+  std::memset(target, 0, target_size);
+  for (unsigned int i=0; i < source.size() || i <= target_size; i++) {
+    target[i] = source[i];
+  }
+}
+
+//boost::optional<address> get_gateway(ip_interface const& iface, span<ip_route const> routes);
+//@see enum_net.hpp -> struct libtorrent::ip_interface
+//@see enum_net.hpp -> struct libtorrent::ip_route
+libtorrent::address get_gateway(ip_interface const& iface, std::vector<ip_route>& routes)
+{
+ // convert our libtorrent.h defined types to native libtorrent:: types from enum_net.hpp
+ libtorrent::ip_interface lt_iface;
+ lt_iface.interface_address = iface.interface_address;
+ lt_iface.netmask = iface.netmask;
+ lt_iface.preferred = iface.preferred;
+
+ copy_byte_vector_to_char_array(iface.name, lt_iface.name, sizeof(lt_iface.name)); // 64
+ copy_byte_vector_to_char_array(iface.friendly_name, lt_iface.friendly_name, sizeof(lt_iface.friendly_name)); // 128
+ copy_byte_vector_to_char_array(iface.description, lt_iface.description, sizeof(lt_iface.description)); // 128
+
+ // convert ip_route_vector to vector<libtorrent::ip_route const> (cannot use const, gnu g++ explodes in linux/android thinking there's an ambiguity)
+ std::vector<libtorrent::ip_route> lt_routes;
+ for (auto const& r : routes) {
+   libtorrent::ip_route lt_ip_route;
+   lt_ip_route.destination = r.destination;
+   lt_ip_route.netmask = r.netmask;
+   lt_ip_route.gateway = r.gateway;
+   lt_ip_route.source_hint = r.source_hint;
+   lt_ip_route.mtu = r.mtu;
+   copy_byte_vector_to_char_array(r.name, lt_ip_route.name, sizeof(lt_ip_route.name)); //64
+   lt_routes.push_back(lt_ip_route);
+ }
+
+ return libtorrent::get_gateway(lt_iface, lt_routes).get();
 }
 
 bool arm_neon_support()

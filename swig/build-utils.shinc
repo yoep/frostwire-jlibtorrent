@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
-LIBRARY_VERSION=1.2.3.0
+LIBRARY_VERSION=`cat ../build.gradle | grep "version '" | awk '{ print $2 }' | sed "s/'//g"`
 LIBRARY_NAME=jlibtorrent
-LIBTORRENT_REVISION=b5bf6c3260bd726b0181671625c007be5ad49845 #fix http_stream::handshake2 (RC_1_2)
-OPENSSL_VERSION="1.1.1d"
-BOOST_VERSION="72"
+
+LIBTORRENT_REVISION=70f1de3f7ec4012aaea420ff150ef0135d397706 # bump version to 1.2.10 (branch:RC_1_2) Sep 3, 2020
+
+OPENSSL_VERSION="1.1.1g"
+BOOST_VERSION="74"
 BOOST_MAJOR="1"
 BOOST_MINOR="0"
 SWIG=`pwd`
@@ -74,7 +76,7 @@ prepare_boost() {
   echo "Checking for ${BOOST_ROOT}..."
   if [ ! -d ${BOOST_ROOT} ]; then
     prompt_msg "Downloading BOOST ${BOOST_MAJOR}_${BOOST_VERSION}_${BOOST_MINOR}"
-    wget -O boost.zip https://dl.bintray.com/boostorg/release/${BOOST_MAJOR}.${BOOST_VERSION}.${BOOST_MINOR}/source/boost_${BOOST_MAJOR}_${BOOST_VERSION}_${BOOST_MINOR}.zip
+    wget -4 -O boost.zip https://dl.bintray.com/boostorg/release/${BOOST_MAJOR}.${BOOST_VERSION}.${BOOST_MINOR}/source/boost_${BOOST_MAJOR}_${BOOST_VERSION}_${BOOST_MINOR}.zip
     unzip -qq boost.zip
     rm -f boost.zip
   fi
@@ -83,9 +85,13 @@ prepare_boost() {
   if [[ "${os_build}-${os_arch}" -eq "linux-arm" ]]; then
     echo "Using boost's default bootstrap build"
     ./bootstrap.sh
+    ./b2
+    ./b2 /headers
   else
     echo "Using boost's bjam bootstrap build"
     ./bootstrap.sh --with-bjam=BJAM
+    ./b2
+    ./b2 /headers
   fi
   popd
   popd
@@ -105,7 +111,7 @@ prepare_android_toolchain() {
   
   if [ ! -f android-ndk-${NDK_VERSION}.zip ]; then
     prompt_msg "Downloading android-ndk-${NDK_VERSION}"
-    wget -O android-ndk-${NDK_VERSION}.zip https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-${host_os}-x86_64.zip;
+    wget -4 -O android-ndk-${NDK_VERSION}.zip https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-${host_os}-x86_64.zip;
     prompt_msg "Extracting NDK...wait";
     unzip -qq android-ndk-${NDK_VERSION}.zip;
   fi
@@ -121,9 +127,12 @@ prepare_android_toolchain() {
 }
 
 prepare_linux_toolchain() {
+  echo "preparing linux toolchain..."
   sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   sudo apt-get update -qq
-  sudo apt-get install -qq g++-5
+  sudo apt-get install -qq g++-7 g++-7-multilib
+  echo "done preparing linux toolchain"
+  #echo "...skipping prepare_linux_toolchain"
 }
 
 prepare_linux_arm_toolchain() {
@@ -139,7 +148,7 @@ prepare_openssl() {
   if [ ! -d ${OPENSSL_SOURCE} ]; then
     prompt_msg "Downloading OPENSSL ${OPENSSL_VERSION} to '{$OPENSSL_SOURCE}'"
     pushd ${SRC}
-    wget -O openssl.tar.gz https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz
+    wget -4 -O openssl.tar.gz https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz
     tar xvfz openssl.tar.gz
     rm -f openssl.tar.gz
     popd
@@ -177,9 +186,7 @@ prepare_libtorrent() {
   prompt_msg "Abort with Ctrl-C if there's pending changes above or you will lose them"
   press_any_to_continue
   git fetch origin RC_1_2
-  git checkout RC_1_2 FETCH_HEAD #master
-  #git pull origin RC_1_2 #master
-  git checkout ${LIBTORRENT_REVISION}
+  git reset --hard ${LIBTORRENT_REVISION}
   git submodule init
   git submodule update
   make clean
@@ -187,6 +194,7 @@ prepare_libtorrent() {
 }
 
 build_libraries() {
+  abort_if_var_unset "OPENSSL_ROOT" ${OPENSSL_ROOT}
   abort_if_var_unset "SWIG" ${SWIG}
   abort_if_var_unset "os_build" ${os_build}
   abort_if_var_unset "os_arch" ${os_arch}
@@ -201,6 +209,7 @@ build_libraries() {
   export PATH=${PATH}:${BOOST_ROOT}/tools/build/src/engine
   echo "Added boost tools to PATH:"
   echo ${PATH}
+  export OPENSSL_ROOT=${OPENSSL_ROOT}
   export LIBTORRENT_ROOT=${LIBTORRENT_ROOT}
   $run_bjam
   if [[ $? -ne 0 ]]; then
@@ -230,11 +239,16 @@ build_libraries() {
 cleanup_objects() {
   abort_if_var_unset "SWIG" ${SWIG}
   # cleanup (when it's finally working, enable this)
-  cd ${SWIG}/bin
-  find . -type f | egrep -v '.*\.so$|.*\.dll$|.*\.dylib$|.*\.debug$' | xargs rm
-  find . -empty -type d | xargs rm -r
+  if [ -d ${SWIG}/bin ]; then
+    cd ${SWIG}/bin
+    find . -type f | egrep -v '.*\.so$|.*\.dll$|.*\.dylib$|.*\.debug$' | xargs rm
+    find . -empty -type d | xargs rm -r
+  else
+    echo ${SWIG}/bin folder not found, nothing to clean
+  fi
   cd ${SWIG}
   cd ..
   find . -type f | egrep '\d.\d.\d.\d\d.jar$'
   cd ${SWIG}
 }
+

@@ -1068,6 +1068,15 @@ public class SessionManager {
         }
     }
 
+    private void onListenFailed(ListenFailedAlert alert) {
+        LOG.error("onListenFailed(): iface= " + alert.listenInterface() +
+                ", address= " + alert.address() +
+                ", port= " + alert.port() +
+                ", socketType= " + alert.socketType() +
+                ", errorCode= " + alert.error());
+        LOG.error("onListenFailed(): error_message=" + alert.message());
+    }
+
     private void toggleDht(boolean on) {
         if (session == null || isDhtRunning() == on) {
             return;
@@ -1119,6 +1128,7 @@ public class SessionManager {
 
         sb.append("dht.libtorrent.org:25401").append(",");
         sb.append("router.bittorrent.com:6881").append(",");
+        sb.append("router.utorrent.com:6881").append(",");
         sb.append("dht.transmissionbt.com:6881").append(",");
         // for DHT IPv6
         sb.append("router.silotis.us:6881");
@@ -1168,6 +1178,10 @@ public class SessionManager {
                                 case LISTEN_SUCCEEDED:
                                     alert = Alerts.cast(a);
                                     onListenSucceeded((ListenSucceededAlert) alert);
+                                    break;
+                                case LISTEN_FAILED:
+                                    alert = Alerts.cast(a);
+                                    onListenFailed((ListenFailedAlert) alert);
                                     break;
                                 case EXTERNAL_IP:
                                     alert = Alerts.cast(a);

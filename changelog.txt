@@ -1,3 +1,95 @@
+1.2.10.0
+ * libtorrent 1.2.10 update (70f1de3f7ec4012aaea420ff150ef0135d397706)
+ * lt: improve stat_file() performance on Windows
+ * lt: fix issue with loading invalid torrents with only 0-sized files
+ * lt: fix to avoid large stack allocations
+ * lt: add macro TORRENT_CXX11_ABI for clients building with C++14 against
+   libtorrent build with C++11
+ * lt: removed deprecated wstring overloads on non-windows systems
+ * lt: drop dependency on Unicode's ConvertUTF code (which had a license
+   incompatible with Debian)
+ * lt: fix bugs exposed on big-endian systems
+ * lt: fix detection of hard-links not being supported by filesystem
+ * lt: fixed resume data regression for seeds with prio 0 files
+ * binaries: compiler upgraded from g++-5 to g++-7
+
+1.2.8.0
+ * add router.utorrent.com to list of DHT bootstrap nodes
+ * Android builds with new NDK r21d
+ * lt: validate UTF-8 encoding of client version strings from peers
+ * lt: don't time out tracker announces as eagerly while resolving hostnames
+ * lt: fix NAT-PMP shutdown issue
+ * lt: improve hostname lookup by merging identical lookups
+ * lt: fix network route enumeration for large routing tables
+ * lt: fixed issue where pop_alerts() could return old, invalid alerts
+ * lt: fix issue when receiving have-all message before the metadata
+ * lt: don't leave lingering part files handles open
+ * lt: disallow calling add_piece() during checking
+ * lt: fix incorrect filename truncation at multi-byte character
+ * lt: always announce listen port 1 when using a proxy
+
+1.2.7.0
+ * libtorrent 1.2.7 update (ce0a85f783bec37484776a37fe3662279091ecc5)
+ * upgraded to boost 1.73.0
+ * upgraded to openssl 1.1.1g
+ * lt: fix incorrect filename truncation at multi-byte character
+ * lt: always announce listen port 1 when using a proxy
+ * lt: add set_alert_fd in python binding, to supersede set_alert_notify
+ * lt: fix bug in part files > 2 GiB
+ * lt: add function to clear the peer list for a torrent
+ * lt: fix resume data functions to save/restore more torrent flags
+ * lt: limit number of concurrent HTTP announces
+ * lt: fix queue position for force_rechecking a torrent that is not auto-managed
+ * lt: improve rate-based choker documentation, and minor tweak
+ * lt: undeprecate upnp_ignore_nonrouters (but refering to devices on our subnet)
+ * lt: increase default tracker timeout
+ * lt: retry failed socks5 server connections
+ * lt: allow UPnP lease duration to be changed after device discovery
+ * lt: fix IPv6 address change detection on Windows
+ * lt: fix peer timeout logic
+ * lt: simplify proxy handling. A proxy now overrides listen_interfaces
+ * lt: fix issues when configured to use a non-default choking algorithm
+ * lt: fix issue in reading resume data
+ * lt: revert NXDOMAIN change from 1.2.4
+ * lt: don't open any listen sockets if listen_interfaces is empty or misconfigured
+ * lt: fix bug in auto disk cache size logic
+ * lt: fix issue with outgoing_interfaces setting, where bind() would be called twice
+ * lt: add build option to disable share-mode
+ * lt: support validation of HTTPS trackers
+ * lt: deprecate strict super seeding mode
+ * lt: make UPnP port-mapping lease duration configurable
+ * lt: deprecate the bittyrant choking algorithm
+ * lt: add build option to disable streaming
+
+1.2.6.0
+ * There was no 1.2.6 release, we waited and jumped all the way to 1.2.7.0
+
+1.2.5.0
+ * libtorrent 1.2.5 update (0f337b9ce7a1b0fc87f48843933b1c5c4dd5a9ec)
+ * New SettingsPack::dhtUploadRate(), SettingsPack::dhtUploadRate(int)
+ * lt:announce port=1 instead of port=0, when there is no listen port
+ * lt:fix LSD over IPv6
+ * lt:support TCP_NOTSENT_LOWAT on Linux
+ * lt:fix correct interface binding of local service discovery multicast
+ * lt:fix issue with knowing which interfaces to announce to trackers and DHT
+ * lt:undeprecate settings_pack::dht_upload_rate_limit
+
+1.2.4.0
+ * libtorrent 1.2.4 update (ad83b1c0eb293b63c69f7879ca6ba2381369f77f)
+ * Java source compatibility upgraded from 1.7 to 1.8
+ * lt:fix binding TCP and UDP sockets to the same port, when specifying port 0
+ * lt:fix announce_to_all_trackers and announce_to_all_tiers behavior
+ * lt:fix suggest_read_cache setting
+ * lt:back-off tracker hostname looksups resulting in NXDOMAIN
+ * lt:lower SOCKS5 UDP keepalive timeout
+ * lt:fix external IP voting for multi-homed DHT nodes
+ * lt:deprecate broadcast_lsd setting. Just use multicast
+ * lt:deprecate upnp_ignore_nonrouters setting
+ * lt:don't attempt sending event=stopped if event=start never succeeded
+ * lt:make sure &key= stays consistent between different source IPs (as mandated by BEP7)
+ * lt:fix binding sockets to outgoing interface
+ * lt:add new socks5_alert to trouble shoot SOCKS5 proxies
+
 1.2.3.0
   * libtorrent 1.2.3 update (b5bf6c3260bd726b0181671625c007be5ad49845)
   * using android NDK r20b
