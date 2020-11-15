@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # This script is meant to run here inside the swig/ folder
-# It's supposed to be a one step build for the java jar and android (.so enclosing) jars (armv7 and x86)
+# It's supposed to be a one step build for the java jar (.so enclosing) jars (armv7)
 # Output .jar files will be at:
 # ../build/libs/${LIBRARY_NAME}-<version>.jar
 # ../build/libs/${LIBRARY_NAME}-linux-<version>.jar
 
-# remote linux-x86 build with travis is available at https://s3.amazonaws.com/gubatron-jlibtorrent/release/linux/x86_64/libjlibtorrent.so
+# IMPORTANT NOTICE FOR RASPBERRY PI
+# make sure the source files of "frostwire-jlibtorrent" are within your home directory (e.g. ~/frostwire-jlibtorrent)
+# if this is not the case, then the B2 step will fail to find the "boost-build.jam"
 
 source build-utils.shinc
 check_min_req_vars

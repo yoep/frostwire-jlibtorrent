@@ -1,6 +1,6 @@
 import os ;
 
-using gcc : arm : g++-5 :
+using gcc : arm : g++-7 :
     <cxxflags>-fPIC
     <cxxflags>-march=armv7-a
     <cxxflags>-mfpu=neon
