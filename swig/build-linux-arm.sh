@@ -22,7 +22,7 @@ prepare_linux_arm_toolchain
 export CC=gcc-7
 export run_openssl_configure="./Configure linux-${os_arch}v4 ${OPENSSL_NO_OPTS} -march=armv7-a -mfpu=neon -fPIC --prefix=${OPENSSL_ROOT}";
 export run_readelf="readelf -d bin/release/${os_build}/${os_arch}/${SHARED_LIB}"
-export run_bjam="cd ${BOOST_ROOT} && ./b2 -j8 --user-config=${CURRENT_DIR}/config/${os_build}-${os_arch}-config.jam variant=release toolset=gcc-${os_arch} target-os=${os_build} location=bin/release/${os_build}/${os_arch} && cd ${CURRENT_DIR}"
+export run_bjam="./b2 -j8 --user-config=${CURRENT_DIR}/config/${os_build}-${os_arch}-config.jam variant=release toolset=gcc-${os_arch} target-os=${os_build} location=bin/release/${os_build}/${os_arch}"
 export run_strip="strip --strip-unneeded -x bin/release/${os_build}/${os_arch}/${SHARED_LIB}"
 export run_objcopy="objcopy --only-keep-debug bin/release/${os_build}/${os_arch}/${SHARED_LIB} bin/release/${os_build}/{$os_arch}/${SHARED_LIB}.debug"
 sed -i 's/RANLIB = ranlib/RANLIB = "${ANDROID_TOOLCHAIN}\/bin\/arm-linux-android-ranlib"/g' ${BOOST_ROOT}/tools/build/src/tools/gcc.jam;
