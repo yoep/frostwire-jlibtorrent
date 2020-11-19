@@ -139,7 +139,7 @@ prepare_linux_arm_toolchain() {
   echo "preparing linux ARM toolchain..."
   echo "Installing g++-7"
   sudo apt-get update -qq
-  sudo apt-get install -qq g++-7
+  sudo apt-get install -qq g++-7 g++-7-multilib
 }
 
 prepare_openssl() {
