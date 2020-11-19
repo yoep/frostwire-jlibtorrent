@@ -212,15 +212,7 @@ build_libraries() {
   echo ${PATH}
   export OPENSSL_ROOT=${OPENSSL_ROOT}
   export LIBTORRENT_ROOT=${LIBTORRENT_ROOT}
-  if [[ "${os_build}-${os_arch}" -eq "linux-arm" ]]; then
-    # temp change the working directory to the boost dir
-    cd "${BOOST_ROOT}"
-    $run_bjam
-    # change the working directory back to the original
-    cd "${CURRENT_DIR}"
-  else
-    $run_bjam
-  fi
+  $run_bjam
   if [[ $? -ne 0 ]]; then
     echo "Run BJAM failed with exit code ${$?}"
     exit 1
